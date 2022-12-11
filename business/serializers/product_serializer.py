@@ -3,7 +3,7 @@ from business.models import Product
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(max_length=68, min_length=3, write_only=True)
+    name = serializers.CharField(max_length=68, min_length=3)
     category = serializers.ChoiceField(choices=[
         "groceries", "accessories",
         "laundry_products", "books",

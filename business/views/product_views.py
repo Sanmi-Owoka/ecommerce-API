@@ -26,11 +26,10 @@ class ProductViewSet(ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             serializer.save()
-            response = GetProductSerializer(request.data)
             return Response(
                 {
                     "message": "success",
-                    "data": response.data,
+                    "data": serializer.data,
                     "errors": "null"
                 },
                 status=status.HTTP_201_CREATED
@@ -57,7 +56,7 @@ class ProductViewSet(ModelViewSet):
                 )
             else:
                 products = self.queryset
-            serializer = GetProductSerializer(products, many=True)
+            serializer = self.get_serializer(products, many=True)
             return Response(
                 {
                     "message": "success",
@@ -89,7 +88,7 @@ class ProductViewSet(ModelViewSet):
                     },
                     status=status.HTTP_404_NOT_FOUND)
             product = product_queryset.first()
-            serializer = GetProductSerializer(product)
+            serializer = self.get_serializer(product)
             return Response(
                 {
                     "message": "success",
@@ -139,6 +138,78 @@ class ProductViewSet(ModelViewSet):
                     "errors": "null"
                 },
                 status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            print("error", e)
+            return Response(
+                {
+                    "message": "failure",
+                    "data": "null",
+                    "errors": [f"{e}"]
+                }
+                , status=status.HTTP_400_BAD_REQUEST
+            )
+
+    def partial_update(self, request, pk=None):
+        try:
+            product_queryset = self.queryset.filter(id=pk)
+            if not product_queryset.exists():
+                return Response(
+                    {
+                        "message": "failure",
+                        "data": "null",
+                        "errors": f"Product with ID:{pk} does not exist"
+                    },
+                    status=status.HTTP_404_NOT_FOUND)
+            product = product_queryset.first()
+            serializer = self.get_serializer(product, data=request.data, partial=True)
+            if not serializer.is_valid():
+                return Response(
+                    {
+                        "message": "failure",
+                        "data": "null",
+                        "errors": serializer.errors,
+                    }
+                    , status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "message": "success",
+                    "data": serializer.data,
+                    "errors": "null"
+                },
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            print("error", e)
+            return Response(
+                {
+                    "message": "failure",
+                    "data": "null",
+                    "errors": [f"{e}"]
+                }
+                , status=status.HTTP_400_BAD_REQUEST
+            )
+        
+    def destroy(self, request, pk=None):
+        try:
+            product_queryset = self.queryset.filter(id=pk)
+            if not product_queryset.exists():
+                return Response(
+                    {
+                        "message": "failure",
+                        "data": "null",
+                        "errors": f"Product with ID:{pk} does not exist"
+                    },
+                    status=status.HTTP_404_NOT_FOUND)
+            product = product_queryset.first()
+            product.delete()
+            return Response(
+                {
+                    "message": "success",
+                    "data": "null",
+                    "errors": "null"
+                },
+                status=status.HTTP_204_NO_CONTENT
             )
         except Exception as e:
             print("error", e)
