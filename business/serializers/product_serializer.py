@@ -36,8 +36,6 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class GetProductSerializer(serializers.ModelSerializer):
-    cover_image = serializers.SerializerMethodField()
-
     class Meta:
         model = Product
         fields = "__all__"
@@ -53,9 +51,3 @@ class GetProductSerializer(serializers.ModelSerializer):
             "updated_at",
             "created_at"
         ]
-
-    def get_cover_image(self, instance):
-        try:
-            return self.context["request"].build_absolute_uri(instance.cover_image.url)
-        except:
-            return None
