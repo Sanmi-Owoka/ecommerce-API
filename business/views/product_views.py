@@ -37,7 +37,14 @@ class ProductViewSet(ModelViewSet):
             )
         except Exception as e:
             print("error", e)
-            return Response({"message": [f"{e}"]}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "message": "failure",
+                    "data": "null",
+                    "errors": [f"{e}"]
+                }
+                , status=status.HTTP_400_BAD_REQUEST
+            )
 
     def list(self, request):
         try:
@@ -61,7 +68,14 @@ class ProductViewSet(ModelViewSet):
             )
         except Exception as e:
             print("error", e)
-            return Response({"message": [f"{e}"]}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "message": "failure",
+                    "data": "null",
+                    "errors": [f"{e}"]
+                }
+                , status=status.HTTP_400_BAD_REQUEST
+            )
 
     def retrieve(self, request, pk=None):
         try:
@@ -84,6 +98,55 @@ class ProductViewSet(ModelViewSet):
                 },
                 status=status.HTTP_200_OK
             )
+
         except Exception as e:
             print("error", e)
-            return Response({"message": [f"{e}"]}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "message": "failure",
+                    "data": "null",
+                    "errors": [f"{e}"]
+                }
+                , status=status.HTTP_400_BAD_REQUEST
+            )
+
+    def update(self, request, pk=None):
+        try:
+            product_queryset = self.queryset.filter(id=pk)
+            if not product_queryset.exists():
+                return Response(
+                    {
+                        "message": "failure",
+                        "data": "null",
+                        "errors": f"Product with ID:{pk} does not exist"
+                    },
+                    status=status.HTTP_404_NOT_FOUND)
+            product = product_queryset.first()
+            serializer = self.get_serializer(product, data=request.data)
+            if not serializer.is_valid():
+                return Response(
+                    {
+                        "message": "failure",
+                        "data": "null",
+                        "errors": serializer.errors,
+                    }
+                    , status=status.HTTP_400_BAD_REQUEST)
+            self.perform_update(serializer)
+            return Response(
+                {
+                    "message": "success",
+                    "data": serializer.data,
+                    "errors": "null"
+                },
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            print("error", e)
+            return Response(
+                {
+                    "message": "failure",
+                    "data": "null",
+                    "errors": [f"{e}"]
+                }
+                , status=status.HTTP_400_BAD_REQUEST
+            )

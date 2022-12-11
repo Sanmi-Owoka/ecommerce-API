@@ -34,6 +34,15 @@ class ProductSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return Product.objects.create(**validated_data)
 
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.category = validated_data.get('category', instance.category)
+        instance.size = validated_data.get('size', instance.size)
+        instance.color = validated_data.get('color', instance.color)
+        instance.quantity = validated_data.get('quantity', instance.quantity)
+        instance.price = validated_data.get('price', instance.price)
+        instance.cover_image = validated_data.get('cover_image', instance.cover_image)
+        return instance
 
 class GetProductSerializer(serializers.ModelSerializer):
     class Meta:
