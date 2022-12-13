@@ -4,6 +4,7 @@ from users.models import User
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
+
 class UsersViews(generics.GenericAPIView):
     serializer_class = UserSerializer
     permission_classes = ["IsAuthenticated"]

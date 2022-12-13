@@ -9,6 +9,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ["category"]
     search_fields = ['name']
 
+
 @admin.register(UserCartProduct)
 class UserCartProduct(admin.ModelAdmin):
     list_display = ['id', 'product', 'quantity', 'total_amount', 'created_at', 'updated_at']

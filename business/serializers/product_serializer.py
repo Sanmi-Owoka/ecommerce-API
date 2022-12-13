@@ -44,6 +44,7 @@ class ProductSerializer(serializers.ModelSerializer):
         instance.cover_image = validated_data.get('cover_image', instance.cover_image)
         return instance
 
+
 class GetProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product

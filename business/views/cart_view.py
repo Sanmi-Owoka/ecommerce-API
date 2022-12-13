@@ -7,8 +7,8 @@ from django.db.models import Sum, Count, When, Case, Q
 from rest_framework.viewsets import ModelViewSet
 from business.models import UserCartProduct, UserCart, Product
 from business.serializers.cart_serializer import (
-    UserCartProductSerializer, 
-    RegisterUserCartProductSerializer, 
+    UserCartProductSerializer,
+    RegisterUserCartProductSerializer,
     DeleteUserCartProductSerializer
 )
 from business.serializers.product_serializer import GetProductSerializer
@@ -19,7 +19,6 @@ class CartView(generics.GenericAPIView):
     queryset = UserCart.objects.all()
     serializer_class = RegisterUserCartProductSerializer
 
-    
     def post(self, request):
         try:
             user = request.user
@@ -55,22 +54,22 @@ class CartView(generics.GenericAPIView):
                         "errors": f"product with name: {product_name} is out of stock",
                     }
                     , status=status.HTTP_400_BAD_REQUEST)
-            
-            if quantity > product_quantity :
+
+            if quantity > product_quantity:
                 return Response(
                     {
                         "message": "failure",
                         "data": "null",
-                        "errors": f"""the quantity entered is greater than the product quantity, the current product quantity is {product_quantity }""",
+                        "errors": f"""the quantity entered is greater than the product quantity, the current product quantity is {product_quantity}""",
                     }
                     , status=status.HTTP_400_BAD_REQUEST)
             user_cart, created = UserCart.objects.get_or_create(user=user)
             amount = Decimal(float(price)) * int(quantity)
             check_user_cart_product_queryset = UserCartProduct.objects.filter(
-                user=user, 
+                user=user,
                 product=product,
                 cart=user_cart
-                )
+            )
             if check_user_cart_product_queryset.exists():
                 user_cart_product = check_user_cart_product_queryset.first()
                 previous_amount = user_cart_product.total_amount
@@ -93,9 +92,9 @@ class CartView(generics.GenericAPIView):
             response = UserCartProductSerializer(user_cart_product)
             return Response(
                 {
-                        "message": "Success",
-                        "data": response.data,
-                        "errors": "null"
+                    "message": "Success",
+                    "data": response.data,
+                    "errors": "null"
                 },
                 status=status.HTTP_200_OK
             )
@@ -109,6 +108,7 @@ class CartView(generics.GenericAPIView):
                 }
                 , status=status.HTTP_400_BAD_REQUEST
             )
+
 
 class DeleteCartView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
@@ -139,10 +139,10 @@ class DeleteCartView(generics.GenericAPIView):
                     , status=status.HTTP_400_BAD_REQUEST)
             user_cart = get_user_cart_queryset.first()
             check_user_cart_product_queryset = UserCartProduct.objects.filter(
-                user=user, 
+                user=user,
                 product=product,
                 cart=user_cart
-                )
+            )
             if not check_user_cart_product_queryset.exists():
                 return Response(
                     {
@@ -158,12 +158,12 @@ class DeleteCartView(generics.GenericAPIView):
             user_cart_product.delete()
             response = GetProductSerializer(product)
             return Response(
-                    {
-                        "message": "Success",
-                        "data": response.data,
-                        "errors": f"null",
-                    }
-                    , status=status.HTTP_400_BAD_REQUEST)
+                {
+                    "message": "Success",
+                    "data": response.data,
+                    "errors": f"null",
+                }
+                , status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
             print("error", e)
