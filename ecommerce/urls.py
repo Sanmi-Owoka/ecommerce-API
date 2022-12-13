@@ -7,6 +7,8 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 urlpatterns = [
                   path('admin/', admin.site.urls),
                   path("api/v1/", include("ecommerce.api_router")),
+                  path("api/v1/users/",include("users.urls")),
+                  path("api/v1/cart/", include("business.urls")),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Django Swagger Documentation Urlpatterns

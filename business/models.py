@@ -1,6 +1,7 @@
 from django.db import models
 import os
 import uuid
+from users.models import User
 
 
 def get_avatar_upload_path(instance, filename):
@@ -31,3 +32,19 @@ class Product(models.Model):
 
     class Meta:
         ordering = ("-created_at",)
+
+
+class UserCart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="users_cart")
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+
+
+class UserCartProduct(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="users_cart_product")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, related_name="users_items")
+    quantity = models.IntegerField(null=True)
+    total_amount = models.DecimalField(max_digits=50, null=True, decimal_places=2)
+    cart = models.ForeignKey(UserCart, on_delete=models.CASCADE, null=True, related_name="product_cart")
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)

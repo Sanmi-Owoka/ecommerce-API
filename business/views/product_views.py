@@ -1,15 +1,12 @@
-from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from business.models import Product
 from ..serializers.product_serializer import (
     ProductSerializer,
-    GetProductSerializer
 )
-from rest_framework import status, serializers
-from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework import status
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from django.db.models import Sum, Count, When, Case, Q
+from django.db.models import Q
 
 
 class ProductViewSet(ModelViewSet):
@@ -23,6 +20,11 @@ class ProductViewSet(ModelViewSet):
             if not serializer.is_valid():
                 return Response(
                     {"message": "failure", "data": "null", "errors": serializer.errors},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if int(serializer.validated_data["quantity"]) < 0:
+                return Response(
+                    {"message": "failure", "data": "null", "errors": "Quantity cannot be lower than 0"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             serializer.save()
@@ -130,6 +132,11 @@ class ProductViewSet(ModelViewSet):
                         "errors": serializer.errors,
                     }
                     , status=status.HTTP_400_BAD_REQUEST)
+            if int(serializer.validated_data["quantity"]) < 0:
+                return Response(
+                    {"message": "failure", "data": "null", "errors": "Quantity cannot be lower than 0"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             self.perform_update(serializer)
             return Response(
                 {
@@ -189,7 +196,7 @@ class ProductViewSet(ModelViewSet):
                 }
                 , status=status.HTTP_400_BAD_REQUEST
             )
-        
+
     def destroy(self, request, pk=None):
         try:
             product_queryset = self.queryset.filter(id=pk)

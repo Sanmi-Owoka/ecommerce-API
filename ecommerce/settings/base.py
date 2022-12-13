@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 import os
 import environ
+import datetime
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -55,17 +56,20 @@ DJANGO_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # rest_framework app
-    'rest_framework'
 ]
 
 THIRD_PARTY_APPS = [
     'corsheaders',
     'drf_spectacular',
+    # rest_framework
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt',
 ]
 
 LOCAL_APPS = [
-    "business"
+    "business",
+    "users"
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -101,6 +105,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
+AUTH_USER_MODEL='users.User'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
@@ -129,6 +134,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+PASSWORD_HASHERS = [
+    # https://docs.djangoproject.com/en/dev/topics/auth/passwords/#using-argon2-with-django
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+]
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -177,9 +189,27 @@ CORS_ALLOW_METHODS = [
 ]
 
 REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        "rest_framework.authentication.TokenAuthentication",
+        'rest_framework.authentication.SessionAuthentication',
+    ),
     # drf_spectacular settings
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     "DATETIME_FORMAT": "%Y-%m-%dT%H:%M:%S.%fZ",
+}
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=365),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=365),
+    'UPDATE_LAST_LOGIN': True,
+    'AUTH_HEADER_TYPES': ('JWT'),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'SIGNING_KEY': SECRET_KEY,
 }
 
 SPECTACULAR_SETTINGS = {
