@@ -163,8 +163,66 @@ class DeleteCartView(generics.GenericAPIView):
                     "data": response.data,
                     "errors": f"null",
                 }
-                , status=status.HTTP_400_BAD_REQUEST)
+                , status=status.HTTP_204_NO_CONTENT)
 
+        except Exception as e:
+            print("error", e)
+            return Response(
+                {
+                    "message": "failure",
+                    "data": "null",
+                    "errors": [f"{e}"]
+                }
+                , status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class ClearCartProductsViews(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = UserCart.objects.all()
+    serializer_class = UserCartProductSerializer
+
+    def delete(self, request):
+        try:
+            user = request.user
+            cart = UserCart.objects.filter(user=user)
+            if not cart.exists():
+                return Response(
+                    {
+                        "message": "failure",
+                        "data": "null",
+                        "errors": "user has no products registered"
+                    }
+                    , status=status.HTTP_400_BAD_REQUEST
+                )
+            user_cart = cart.first()
+            user_products = UserCartProduct.objects.filter(
+                user=user,
+                cart=user_cart
+            )
+            if not user_products.exists:
+                return Response(
+                    {
+                        "message": "failure",
+                        "data": "null",
+                        "errors": "user has no products registered"
+                    }
+                    , status=status.HTTP_400_BAD_REQUEST
+                )
+            for user_product in user_products:
+                product = user_product.product
+                product_quantity = user_product.quantity + product.quantity
+                product.quantity = product_quantity
+                product.save()
+                user_product.delete()
+            return Response(
+                {
+                    "message": "Success",
+                    "data": "user products successfully deleted",
+                    "errors": "null"
+                }
+                , status=status.HTTP_204_NO_CONTENT
+            )
         except Exception as e:
             print("error", e)
             return Response(
