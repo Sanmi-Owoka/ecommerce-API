@@ -25,6 +25,16 @@ In summary, these are the lists of commands to run in listed order, to start up 
 4. python manage.py runserver
 
 ```
+LOGIN AND ADMIN CREDENTIALS:{
+    email: admin@admin.com,
+    username: admin,
+    password: 1234
+}
+LOGIN_URL = http://127.0.0.1:8000/api/V1/users/login/
+
+or 
+
+Register new user using REGISTER_URL = http://127.0.0.1:8000/api/V1/users/register/
 
 Swagger_doc = http://127.0.0.1:8000/api/schema/swagger-ui/
 redoc = http://127.0.0.1:8000/api/schema/redoc/
