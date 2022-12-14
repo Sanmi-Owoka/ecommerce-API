@@ -8,6 +8,7 @@ from business.serializers.transaction_serializer import CheckoutSerializer
 
 from business.models import UserCartProduct, UserCart
 
+
 class CheckOutView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
     queryset = UserCartProduct.objects.all()
@@ -29,13 +30,13 @@ class CheckOutView(generics.GenericAPIView):
             user_cart = cart.first()
             serializer = self.get_serializer(user_cart)
             return Response(
-                    {
-                        "message": "Success",
-                        "data": serializer.data,
-                        "errors": "null"
-                    }
-                    , status=status.HTTP_400_BAD_REQUEST
-                )
+                {
+                    "message": "Success",
+                    "data": serializer.data,
+                    "errors": "null"
+                }
+                , status=status.HTTP_400_BAD_REQUEST
+            )
         except Exception as e:
             print("error", e)
             return Response(

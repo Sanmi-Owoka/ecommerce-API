@@ -2,9 +2,11 @@ from rest_framework import serializers
 from business.models import UserCartProduct, UserCart
 from django.db.models import Sum
 
+
 class UserProductSerializer(serializers.ModelSerializer):
     product_name = serializers.SerializerMethodField()
     product_price = serializers.SerializerMethodField()
+
     class Meta:
         model = UserCartProduct
         fields = [
@@ -32,6 +34,7 @@ class UserProductSerializer(serializers.ModelSerializer):
 class CheckoutSerializer(serializers.ModelSerializer):
     cart_products = serializers.SerializerMethodField()
     total_amount_to_be_paid = serializers.SerializerMethodField()
+
     class Meta:
         model = UserCart
         fields = [
@@ -61,7 +64,8 @@ class CheckoutSerializer(serializers.ModelSerializer):
         try:
             user = instance.user
             user_cart = instance
-            check_user_products = UserCartProduct.objects.filter(user=user, cart=user_cart).aggregate(Sum("total_amount"))
+            check_user_products = UserCartProduct.objects.filter(user=user, cart=user_cart).aggregate(
+                Sum("total_amount"))
             total_amount = (
                 0
                 if check_user_products["total_amount__sum"] is None
